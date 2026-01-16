@@ -3,7 +3,6 @@ import { GameEvent, LogEntry, NightAction, Player, SessionState, Status, StatusT
 import { applyEvent, createEmptyState, rebuildState } from '../domain/applyEvent';
 import { defaultSettings } from '../domain/settings';
 import { loadSession, listSessions, panicRecover, saveEvent, saveSession } from '../storage/persistence';
-import { checkForWinEvents, resolveDay, resolveNight } from '../domain/resolve';
 
 const createId = () =>
   typeof crypto !== 'undefined' && 'randomUUID' in crypto
@@ -19,7 +18,6 @@ interface SessionStore {
   loadSessionById: (id: string) => Promise<void>;
   recordEvent: (event: GameEvent) => Promise<void>;
   updateSettings: (settings: SessionState['settings']) => Promise<void>;
-  setStage: (stage: SessionState['stage']) => Promise<void>;
   addPlayer: (name: string) => Promise<void>;
   updatePlayer: (playerId: string, patch: Partial<Player>) => Promise<void>;
   removePlayer: (playerId: string) => Promise<void>;
@@ -36,8 +34,6 @@ interface SessionStore {
   eliminatePlayer: (playerId: string, reason: string) => Promise<void>;
   panic: () => Promise<void>;
   truncateEvents: (keepUntil: number) => Promise<void>;
-  resolveNightStage: () => Promise<void>;
-  resolveDayStage: () => Promise<void>;
 }
 
 export const useSessionStore = create<SessionStore>((set, get) => ({
@@ -86,9 +82,6 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   },
   updateSettings: async (settings) => {
     await get().recordEvent({ type: 'SETTINGS_UPDATED', settings, timestamp: Date.now() });
-  },
-  setStage: async (stage) => {
-    await get().recordEvent({ type: 'STAGE_SET', stage, timestamp: Date.now() });
   },
   addPlayer: async (name: string) => {
     const state = get().active;
@@ -159,47 +152,6 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       const rebuilt = rebuildState(events);
       set({ active: rebuilt });
       await saveSession(rebuilt);
-    }
-  },
-  resolveNightStage: async () => {
-    const state = get().active;
-    if (!state) return;
-    const events = resolveNight(state);
-    for (const event of events) {
-      await get().recordEvent(event);
-    }
-    const nextState = get().active;
-    if (!nextState) return;
-    const winEvents = checkForWinEvents(nextState);
-    for (const event of winEvents) {
-      await get().recordEvent(event);
-    }
-  },
-  resolveDayStage: async () => {
-    const state = get().active;
-    if (!state) return;
-    const voteTotals = new Map<string, number>();
-    state.votes.forEach((vote) => {
-      voteTotals.set(vote.targetId, (voteTotals.get(vote.targetId) ?? 0) + vote.weight);
-    });
-    let maxVotes = 0;
-    let winner: string | null = null;
-    voteTotals.forEach((value, key) => {
-      if (value > maxVotes) {
-        maxVotes = value;
-        winner = key;
-      }
-    });
-    const events = resolveDay(state, winner);
-    for (const event of events) {
-      await get().recordEvent(event);
-    }
-    await get().recordEvent({ type: 'DAY_VOTES_RESET', timestamp: Date.now() });
-    const nextState = get().active;
-    if (!nextState) return;
-    const winEvents = checkForWinEvents(nextState);
-    for (const event of winEvents) {
-      await get().recordEvent(event);
     }
   }
 }));

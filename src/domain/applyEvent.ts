@@ -19,7 +19,6 @@ export const createEmptyState = (): SessionState => ({
     cultLeaderInherit: false
   },
   phase: 'setup',
-  stage: 'players',
   dayNumber: 1,
   nightNumber: 1,
   players: [],
@@ -40,14 +39,11 @@ export const applyEvent = (state: SessionState, event: GameEvent): SessionState 
         createdAt: event.timestamp,
         settings: event.settings,
         phase: 'setup',
-        stage: 'players',
         dayNumber: 1,
         nightNumber: 1
       };
     case 'SETTINGS_UPDATED':
       return { ...next, settings: event.settings };
-    case 'STAGE_SET':
-      return { ...next, stage: event.stage };
     case 'PLAYER_ADDED':
       return { ...next, players: [...next.players, event.player] };
     case 'PLAYER_UPDATED':
@@ -83,8 +79,6 @@ export const applyEvent = (state: SessionState, event: GameEvent): SessionState 
       return { ...next, dayNumber: event.dayNumber, nightNumber: event.nightNumber };
     case 'NIGHT_ACTION_RECORDED':
       return { ...next, nightActions: [...next.nightActions, event.action] };
-    case 'NIGHT_ACTIONS_RESET':
-      return { ...next, nightActions: [] };
     case 'DAY_VOTE_RECORDED':
       return { ...next, votes: [...next.votes, event.vote] };
     case 'DAY_VOTES_RESET':

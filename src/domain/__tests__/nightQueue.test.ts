@@ -10,7 +10,6 @@ const baseState = (players: SessionState['players'], overrides?: Partial<Session
   updatedAt: 1,
   settings: defaultSettings,
   phase: 'night',
-  stage: 'night',
   dayNumber: 1,
   nightNumber: 1,
   players,

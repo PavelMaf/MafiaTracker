@@ -9,13 +9,11 @@ import Day from './pages/Day';
 import Log from './pages/Log';
 import RolesLibrary from './pages/RolesLibrary';
 import SettingsPage from './pages/Settings';
-import Flow from './pages/Flow';
 
 const App = () => (
   <Layout>
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/flow" element={<Flow />} />
       <Route path="/new" element={<NewGame />} />
       <Route path="/roles" element={<RolesSetup />} />
       <Route path="/table" element={<Table />} />

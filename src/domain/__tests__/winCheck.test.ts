@@ -10,7 +10,6 @@ const createState = (players: SessionState['players'], events: SessionState['eve
   updatedAt: 1,
   settings: defaultSettings,
   phase: 'day',
-  stage: 'day',
   dayNumber: 1,
   nightNumber: 1,
   players,

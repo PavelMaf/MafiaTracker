@@ -17,12 +17,12 @@ const Home = () => {
   const handleCreate = async () => {
     if (!name.trim()) return;
     await createSession(name.trim());
-    navigate('/flow');
+    navigate('/new');
   };
 
   const handleContinue = async (id: string) => {
     await loadSessionById(id);
-    navigate('/flow');
+    navigate('/table');
   };
 
   const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,7 +34,7 @@ const Home = () => {
       const payload = JSON.parse(text);
       const state = await importSession(payload);
       await loadSessionById(state.id);
-      navigate('/flow');
+      navigate('/table');
     } catch (error) {
       setImportError('Ошибка импорта: проверьте JSON.');
     }

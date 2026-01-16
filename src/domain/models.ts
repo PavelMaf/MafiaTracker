@@ -1,7 +1,6 @@
 export type Team = 'villagers' | 'werewolves' | 'vampires' | 'sect' | 'neutral';
 
 export type Phase = 'setup' | 'night' | 'day' | 'ended';
-export type Stage = 'players' | 'introNight' | 'day' | 'night' | 'ended';
 
 export type RevealMode = 'none' | 'team' | 'role';
 
@@ -117,7 +116,6 @@ export interface SessionState {
   updatedAt: number;
   settings: Settings;
   phase: Phase;
-  stage: Stage;
   dayNumber: number;
   nightNumber: number;
   players: Player[];
@@ -130,7 +128,6 @@ export interface SessionState {
 export type GameEvent =
   | { type: 'SESSION_CREATED'; sessionId: string; name: string; settings: Settings; timestamp: number }
   | { type: 'SETTINGS_UPDATED'; settings: Settings; timestamp: number }
-  | { type: 'STAGE_SET'; stage: Stage; timestamp: number }
   | { type: 'PLAYER_ADDED'; player: Player; timestamp: number }
   | { type: 'PLAYER_UPDATED'; playerId: string; patch: Partial<Player>; timestamp: number }
   | { type: 'PLAYER_REMOVED'; playerId: string; timestamp: number }
@@ -139,7 +136,6 @@ export type GameEvent =
   | { type: 'PHASE_SET'; phase: Phase; timestamp: number }
   | { type: 'DAY_NIGHT_SET'; dayNumber: number; nightNumber: number; timestamp: number }
   | { type: 'NIGHT_ACTION_RECORDED'; action: NightAction; timestamp: number }
-  | { type: 'NIGHT_ACTIONS_RESET'; timestamp: number }
   | { type: 'DAY_VOTE_RECORDED'; vote: Vote; timestamp: number }
   | { type: 'DAY_VOTES_RESET'; timestamp: number }
   | { type: 'LOG_ENTRY_ADDED'; entry: LogEntry; timestamp: number }
