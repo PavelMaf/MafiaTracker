@@ -1,1 +1,2 @@
 # MafiaTracker
+Настройка Codex
